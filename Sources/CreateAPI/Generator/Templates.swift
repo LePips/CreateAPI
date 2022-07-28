@@ -429,7 +429,7 @@ final class Templates {
         if title == description && options.isAddingTitles && options.isAddingDescription {
             description = ""
         }
-        if title.components(separatedBy: .whitespaces).joined(separator: "").caseInsensitiveCompare(name) == .orderedSame {
+        if title.components(separatedBy: .whitespaces).joined().caseInsensitiveCompare(name) == .orderedSame {
             title = ""
         }
 

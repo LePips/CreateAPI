@@ -476,7 +476,7 @@ extension Generator {
         }
 
         // Add disambiguation for `path` (property vs argument name)
-        if call.first == "path" && parameters.contains(where: { $0.hasPrefix("path:")}) {
+        if call.first == "path" && parameters.contains(where: { $0.hasPrefix("path:") }) {
             call[0] = "self.path"
         }
 

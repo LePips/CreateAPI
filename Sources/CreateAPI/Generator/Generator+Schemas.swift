@@ -366,7 +366,7 @@ extension Generator {
         if words.last?.singularized() != words.last {
             let sing = (words.dropLast() + [words.last?.singularized()])
                 .compactMap { $0?.capitalizingFirstLetter() }
-                .joined(separator: "")
+                .joined()
             if context.parents.isEmpty && !topLevelTypes.contains(TypeName(sing)) {
                 return makeTypeName(sing)
             }

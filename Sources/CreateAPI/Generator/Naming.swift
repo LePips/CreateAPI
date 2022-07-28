@@ -163,7 +163,7 @@ extension String {
                 }
                 return string.capitalizingFirstLetter()
             }
-            .joined(separator: "")
+            .joined()
         guard let first = output.first else {
             return output
         }
@@ -206,7 +206,7 @@ func sanitizeEnumCaseName(_ string: String) -> String {
         return string.unicodeScalars
             .map { $0.properties.name }
             .compactMap { $0 }
-            .joined(separator: "")
+            .joined()
     }
     return string
 }
