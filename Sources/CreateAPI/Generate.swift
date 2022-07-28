@@ -19,39 +19,39 @@ struct Generate: ParsableCommand {
 
     @Option(help: "The output folder")
     var output = "./.create-api/"
-    
+
     @Option(help: "The path to generator configuration. If not present, the command will look for .createAPI file in the current folder.")
     var config = "/.create-api.yaml"
-    
+
     @Flag(name: .shortAndLong, help: "Split output into separate files")
     var split = false
 
     @Flag(name: .shortAndLong, help: "Print additional logging information")
     var verbose = false
-    
+
     @Flag(help: "Turns all warnings into errors")
     var strict = false
-    
+
     @Flag(name: .shortAndLong, help: "Removes the output folder before continuing")
     var clean = false
-    
+
     @Flag(help: "Ignore any errors that happen during code generation")
     var allowErrors = false
-    
+
     #if os(macOS)
     @Flag(help: "Monitor changes to both the spec and the configuration file and automatically re-generated input")
     var watch = false
     #endif
-        
+
     @Option(help: "Generates a complete package with a given name")
     var package: String?
-    
+
     @Option(help: "Use the following name as a module name")
     var module: String?
-        
+
     @Option(help: "Enabled vendor-specific logic (supported values: \"github\")")
     var vendor: String?
-    
+
     @Option(help: "Specifies what to generate", completion: .list(["paths", "entities"]))
     var generate = ["paths", "entities"]
 
@@ -63,7 +63,7 @@ struct Generate: ParsableCommand {
 
     @Flag(help: "By default, saturates all available threads. Pass this option to turn all parallelization off.")
     var singleThreaded = false
-    
+
     @Flag(help: "Measure performance of individual operations")
     var measure = false
 
@@ -79,29 +79,29 @@ struct Generate: ParsableCommand {
 
         try _run()
     }
-    
+
     private func _run() throws {
         print("Generating code for \(input.filename)...")
         let benchmark = Benchmark(name: "Generation")
         try actuallyRun()
         benchmark.stop()
     }
-        
+
     private func actuallyRun() throws {
         let spec = try parseInputSpec()
         let options = try readOptions()
         applyTemplateToEntityIncludeAndExclude(options: options)
         try validateOptions(options: options)
-        
+
         let generator = Generator(spec: spec, options: options, arguments: arguments)
         // IMPORTANT: Paths needs to be generated before schemes.
         let paths = generate.contains("paths") ? try generator.paths() : nil
         let schemas = generate.contains("entities") ? try generator.schemas() : nil
-        
+
         let outputURL = URL(filePath: output)
         if clean { try? FileManager.default.removeItem(at: outputURL) }
         let sourceURL = package.map { outputURL.appending(path: "\($0)/Sources/") } ?? outputURL
-        
+
         let benchmark = Benchmark(name: "Write output files")
         if let package = package {
             let packageURL = outputURL.appending(path: package)
@@ -114,7 +114,7 @@ struct Generate: ParsableCommand {
         try write(output: schemas, name: "Entities", outputURL: sourceURL, options: options)
         benchmark.stop()
     }
-        
+
     private func validateOptions(options: GenerateOptions) throws {
         if module != nil && package != nil {
             throw GeneratorError("`module` and `package` parameters are mutually exclusive")
@@ -129,7 +129,7 @@ struct Generate: ParsableCommand {
             throw GeneratorError("`exclude` and `include` can't be used together")
         }
     }
-    
+
     private func readOptions() throws -> GenerateOptions {
         let url = URL(filePath: config)
 
@@ -149,22 +149,22 @@ struct Generate: ParsableCommand {
             throw GeneratorError("Failed to read configuration. \(error)")
         }
     }
-    
+
     private func applyTemplateToEntityIncludeAndExclude(options: GenerateOptions) {
         options.entities.include = Set(options.entities.include.map { Template(arguments.entityNameTemplate).substitute($0) })
         options.entities.exclude = Set(options.entities.exclude.map { Template(arguments.entityNameTemplate).substitute($0) })
     }
-    
+
     private func parseInputSpec() throws -> OpenAPI.Document {
         VendorExtensionsConfiguration.isEnabled = false
-        
+
         let inputURL = URL(filePath: input)
 
         guard Self.supportedFileFormats.contains(inputURL.pathExtension) else {
             let extensions = Self.supportedFileFormats.map({ "`\($0)`" }).joined(separator: ", ")
             throw GeneratorError("The file must have one of the following extensions: \(extensions).")
         }
-        
+
         var bench = Benchmark(name: "Read spec data")
         let data = try Data(contentsOf: inputURL)
         bench.stop()
@@ -183,7 +183,7 @@ struct Generate: ParsableCommand {
         bench.stop()
         return spec
     }
-    
+
     private func write(output: GeneratorOutput?, name: String, outputURL: URL, options: GenerateOptions) throws {
         guard let output = output else {
             return
@@ -207,11 +207,11 @@ struct Generate: ParsableCommand {
             try process(contents).write(to: outputURL.appending(path: makeFilename(for: name)))
         }
     }
-    
+
     private func makeFilename(for name: String) -> String {
         Template(filenameTemplate).substitute(name)
     }
-    
+
     private var arguments: GenerateArguments {
         guard let module = (package ?? module).map(ModuleName.init(processing:)) else {
             fatalError("You must provide either `module` or `package`")

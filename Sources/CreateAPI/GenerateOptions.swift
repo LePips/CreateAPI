@@ -20,12 +20,12 @@ final class GenerateOptions {
     var isUsingIntegersWithPredefinedCapacity: Bool
     var isSwiftLintDisabled: Bool
     var fileHeaderComment: String?
-    
+
     var entities: Entities
     var paths: Paths
     var rename: Rename
     var comments: Comments
-    
+
     // It's important for longer names to come first
     lazy var allAcronyms: [String] = Set(acronyms)
         .union(addedAcronyms)
@@ -36,7 +36,7 @@ final class GenerateOptions {
         case spaces
         case tabs
     }
-    
+
     struct Entities {
         var isGeneratingStructs: Bool
         var entitiesGeneratedAsClasses: Set<String>
@@ -61,7 +61,7 @@ final class GenerateOptions {
         var isStrippingParentNameInNestedObjects: Bool
         var exclude: Set<String>
         var include: Set<String>
-        
+
         init(_ options: GenerateOptionsSchema.Entities?) {
             self.isGeneratingStructs = options?.isGeneratingStructs ?? true
             self.entitiesGeneratedAsClasses = Set(options?.entitiesGeneratedAsClasses ?? [])
@@ -87,7 +87,7 @@ final class GenerateOptions {
             self.include = Set(options?.include ?? [])
         }
     }
-    
+
     struct Paths {
         var style: PathsStyle
         var namespace: String
@@ -104,7 +104,7 @@ final class GenerateOptions {
         var isRemovingRedundantPaths: Bool
         var exclude: Set<String>
         var include: Set<String>
-        
+
         init(_ options: GenerateOptionsSchema.Paths?) {
             self.style = options?.style ?? .rest
             self.namespace = options?.namespace ?? "Paths"
@@ -122,7 +122,7 @@ final class GenerateOptions {
             self.exclude = Set(options?.exclude ?? [])
         }
     }
-    
+
     enum PathsStyle: String, Decodable {
         case rest
         case operations
@@ -135,7 +135,7 @@ final class GenerateOptions {
         var entities: [String: String]
         var operations: [String: String]
         var collectionElements: [String: String]
-        
+
         init(_ options: GenerateOptionsSchema.Rename?) {
             self.properties = options?.properties ?? [:]
             self.parameters = options?.parameters ?? [:]
@@ -145,7 +145,7 @@ final class GenerateOptions {
             self.collectionElements = options?.collectionElements ?? [:]
         }
     }
-    
+
     struct Comments {
         var isEnabled: Bool
         var isAddingTitles: Bool
@@ -153,7 +153,7 @@ final class GenerateOptions {
         var isAddingExamples: Bool
         var isAddingExternalDocumentation: Bool
         var isCapitalizationEnabled: Bool
-        
+
         init(_ options: GenerateOptionsSchema.Comments?) {
             self.isEnabled = options?.isEnabled ?? true
             self.isAddingTitles = options?.isAddingTitles ?? true
@@ -204,12 +204,12 @@ final class GenerateOptionsSchema: Decodable {
     var isUsingIntegersWithPredefinedCapacity: Bool?
     var isSwiftLintDisabled: Bool?
     var fileHeaderComment: String?
-    
+
     var entities: Entities?
     var paths: Paths?
     var rename: Rename?
     var comments: Comments?
-    
+
     struct Entities: Decodable {
         var isGeneratingStructs: Bool?
         var entitiesGeneratedAsClasses: [String]?
@@ -234,7 +234,7 @@ final class GenerateOptionsSchema: Decodable {
         var exclude: [String]?
         var include: [String]?
     }
-    
+
     struct Paths: Decodable {
         var style: GenerateOptions.PathsStyle?
         var namespace: String?
@@ -260,7 +260,7 @@ final class GenerateOptionsSchema: Decodable {
         var operations: [String: String]?
         var collectionElements: [String: String]?
     }
-    
+
     struct Comments: Decodable {
         var isEnabled: Bool?
         var isAddingTitles: Bool?
